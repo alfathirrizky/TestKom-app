@@ -273,5 +273,6 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+        <script src="//unpkg.com/alpinejs" defer></script>
     </body>
 </html>
