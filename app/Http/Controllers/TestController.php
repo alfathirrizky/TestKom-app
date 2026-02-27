@@ -12,7 +12,8 @@ class TestController extends Controller
      */
     public function index()
     {
-        //
+        $tests = Test::all();
+        return view('DaftarCustomer', compact('tests'));
     }
 
     /**
@@ -20,7 +21,7 @@ class TestController extends Controller
      */
     public function create()
     {
-        //
+        return view('test.create');
     }
 
     /**
@@ -28,7 +29,20 @@ class TestController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'test_text' => 'required',
+            'test_gambar' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
+
+        // Simpan file ke storage/app/public/tests
+        $path = $request->file('test_gambar')->store('tests', 'public');
+
+        Test::create([
+            'test_text' => $request->test_text,
+            'test_gambar' => $path,
+        ]);
+
+        return redirect()->route('tests.index');
     }
 
     /**
@@ -36,7 +50,7 @@ class TestController extends Controller
      */
     public function show(Test $test)
     {
-        //
+        return view('test.show', compact('test'));
     }
 
     /**
@@ -44,7 +58,7 @@ class TestController extends Controller
      */
     public function edit(Test $test)
     {
-        //
+        return view('test.edit', compact('test'));
     }
 
     /**
@@ -52,7 +66,8 @@ class TestController extends Controller
      */
     public function update(Request $request, Test $test)
     {
-        //
+        $test->update($request->all());
+        return redirect()->route('test.index');
     }
 
     /**
@@ -60,6 +75,7 @@ class TestController extends Controller
      */
     public function destroy(Test $test)
     {
-        //
+        $test->delete();
+        return redirect()->route('test.index');
     }
 }
