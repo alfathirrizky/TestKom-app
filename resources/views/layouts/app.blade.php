@@ -18,6 +18,7 @@
         <div class="min-h-screen bg-gray-100">
             <div class=" bg-blue-500 h-28 flex items-center justify-center text-white font-bold text-4xl"> hai dunia</div>
             @include('layouts.navigation')
+            
 
             <!-- Page Heading -->
             @isset($header)

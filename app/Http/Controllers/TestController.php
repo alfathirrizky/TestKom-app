@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Test;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TestController extends Controller
 {
@@ -50,7 +51,7 @@ class TestController extends Controller
      */
     public function show(Test $test)
     {
-        return view('test.show', compact('test'));
+        return view('tests.show', compact('test'));
     }
 
     /**
@@ -58,7 +59,7 @@ class TestController extends Controller
      */
     public function edit(Test $test)
     {
-        return view('test.edit', compact('test'));
+        return view('tests.edit', compact('test'));
     }
 
     /**
@@ -66,8 +67,23 @@ class TestController extends Controller
      */
     public function update(Request $request, Test $test)
     {
-        $test->update($request->all());
-        return redirect()->route('test.index');
+        $request->validate([
+            'test_text' => 'required',
+            'test_gambar' => 'nullable|image|max:2048'
+        ]);
+
+        $test->test_text = $request->test_text;
+
+        if ($request->hasFile('test_gambar')) {
+            if ($test->test_gambar && Storage::disk('public')->exists($test->test_gambar)) {
+                Storage::disk('public')->delete($test->test_gambar);
+            }
+
+            $path = $request->file('test_gambar')->store('tests', 'public');
+            $test->test_gambar = $path;
+        }
+        $test->save();
+        return redirect()->route('tests.index');
     }
 
     /**
@@ -76,6 +92,6 @@ class TestController extends Controller
     public function destroy(Test $test)
     {
         $test->delete();
-        return redirect()->route('test.index');
+        return redirect()->route('tests.index');
     }
 }
