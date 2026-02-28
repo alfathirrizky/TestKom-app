@@ -61,9 +61,9 @@
                     Customer</button>
             </div>
         </div>
-        <table class="w-full mt-5">
+        <table class="w-full mt-5 text-center">
             <thead>
-                <tr class="bg-gray-200">
+                <tr class="bg-gray-200 text-center">
                     <th class="p-2">Text</th>
                     <th class="p-2">Gambar</th>
                     <th class="p-2">Aksi</th>
@@ -71,7 +71,7 @@
             </thead>
             <tbody>
                 @foreach ($tests as $test)
-                    <tr>
+                    <tr class="border-t text-center">
                         <td class="p-2">{{ $test->test_text }}</td>
                         <td class="p-2">
                             <img src="{{ asset('storage/' . $test->test_gambar) }}" width="120">
@@ -133,11 +133,54 @@
                                     </div>
                                 </div>
                             </div>
-                            <form action="{{ route('tests.destroy', $test->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded">Hapus</button>
-                            </form>
+                            <div x-data="{ openDelete: false, deleted: null }">
+                                <form action="{{ route('tests.destroy', $test->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" @click=" openDelete = true; deleteUrl = '{{ route('tests.destroy', $test->id) }}' " class="bg-red-500 text-white px-3 py-1 rounded">
+                                        Hapus
+                                    </button>
+                                    <!-- MODAL DELETE -->
+                                    <div x-show="openDelete" x-transition.opacity @click.self="openDelete = false"
+                                        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+                                        <div x-show="openDelete" x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 scale-90"
+                                            x-transition:enter-end="opacity-100 scale-100"
+                                            x-transition:leave="transition ease-in duration-200"
+                                            x-transition:leave-start="opacity-100 scale-100"
+                                            x-transition:leave-end="opacity-0 scale-90"
+                                            class="bg-white p-6 rounded-xl w-80 shadow-2xl">
+
+                                            <h2 class="text-lg font-semibold mb-3 text-center">
+                                                Yakin ingin menghapus?
+                                            </h2>
+
+                                            <p class="text-gray-600 text-sm text-center mb-5">
+                                                Data yang dihapus tidak bisa dikembalikan.
+                                            </p>
+
+                                            <div class="flex justify-center gap-3">
+
+                                                <button type="button" @click="openDelete = false"
+                                                    class="bg-gray-400 text-white px-4 py-1 rounded">
+                                                    Batal
+                                                </button>
+
+                                                <form :action="'/tests/' + deleteId" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="submit"
+                                                        class="bg-red-500 text-white px-4 py-1 rounded">
+                                                        Ya, Hapus
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
